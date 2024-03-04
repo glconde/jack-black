@@ -46,12 +46,15 @@ for card in range (52):
     if card_position == 14:
         card_position = 1
         suit += 1
+print(f'base: {len(base_deck)}')
 
 for card_id, card in base_deck.items():
-    print(card_face.get(card[0]), get_suit(card[1]))
+    print_card(card)
 
 random.shuffle(playing_deck)
 
+print(f'shuffled: {len(playing_deck)}')
+
 for card_id in playing_deck:
     current_card = base_deck.get(card_id)
-    print(card_face.get(current_card[0]),get_suit(current_card[1]))
+    print_card(current_card)
