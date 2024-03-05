@@ -1,3 +1,14 @@
+"""
+This is a simple game of Black Jack.
+The objective is to draw upto five(5) cards and get to or closer to 21 without getting over.
+The player is give 100 funds to play and a single match will cost 50. Which means you get +50 to your funds if you win, -50 if you lose.
+The game ends if you have zero(0) funds or you chose to quit.
+
+Please view README file for more details on rules and default settings.
+
+George Conde 2024  
+"""
+
 import random
 from typing import Final
 
@@ -30,32 +41,38 @@ YES_NO_RESPONSE = ['Y','N']
 MAX_HAND = 5
 AI_SAFETY = 17
 
+#get the card symbol or suit
 def get_suit(index):
     unicode_str = SUITS.get(index)
     new_str = chr(int(unicode_str,16))
     return new_str
 
+#print the selcted card with it's face and suit
 def print_card(selected_card):
     print(CARD_FACE.get(selected_card[0]),get_suit(selected_card[1]))
 
+#draw a card from the existing deck
 def draw_card(player, current_deck, used_cards):
     dealt_card = current_deck.pop()
     player.append(dealt_card)
     used_cards.append(dealt_card)
 
+#print the hand of the player
 def print_hand(hand, player_name):
     print(f'{player_name} has:')
     for card_id in hand:
         current_card = base_deck.get(card_id)
         print_card(current_card)
 
+#check if the hand has aces
 def check_for_acess(hand):
     found = False
     for card_id in hand: 
         current_card = base_deck.get(card_id)
         if CARD_FACE.get(current_card[0]) == 'A':
             return found
-        
+
+#print the table to refresh the view        
 def print_table(player,dealer,):
     print_hand(dealer, 'dealer')
     dealer_total = calculate_hand_values(dealer)
@@ -65,6 +82,7 @@ def print_table(player,dealer,):
     print(f'player total {player_total}')
     print('-'*20)
 
+#calculate total points on a hand
 def calculate_hand_values(hand):
     total = 0
     ace_count = 0
@@ -90,6 +108,7 @@ def calculate_hand_values(hand):
     
     return total
 
+#this is a simple ai that decides when the dealer needs to draw
 def move_AI(hand,deck,used):
     score = calculate_hand_values(hand)
 
@@ -109,6 +128,7 @@ def move_AI(hand,deck,used):
     else:
         return False
 
+#prints available funds
 def print_funds(wallet):
     print(f'remaining funds [{wallet}]')
 
@@ -130,9 +150,11 @@ for card in range (52):
         card_position = 1
         suit += 1
 
+#default funds. change this to a multiple of 50.
 player_funds = 100
 keep_playing = True
 
+#main game loop, keeps on going while player has money and decides to keep playing
 while player_funds > 0 and keep_playing:
     print_funds(player_funds)
 
@@ -146,6 +168,7 @@ while player_funds > 0 and keep_playing:
     move = ''
     available_ai_moves = MAX_HAND
 
+    #loop for a single match
     while game_is_on:
 
         #initial draw of 2 cards
@@ -187,6 +210,7 @@ while player_funds > 0 and keep_playing:
                 print('forfeit. you lose.')
                 game_is_on = False
 
+        #verify user response, s = stand or stop drawing, h = draw a card, f = automatically lose the match.
         while True and game_is_on:
             move = input('Your move? [S]tand, [H]it, [F]orfeit > ').capitalize()
             if move in VALID_MOVES:
@@ -201,7 +225,6 @@ while player_funds > 0 and keep_playing:
     #game has ended compare scores
     player_score = calculate_hand_values(player_hand)
     dealer_score = calculate_hand_values(dealer_hand)
-
 
     win = False
     if move == 'F':
@@ -228,6 +251,7 @@ while player_funds > 0 and keep_playing:
         print('house wins.')
         player_funds -= 50
 
+    #check if the user still wants to play. replying Y will start a new match
     while True and player_funds > 0:
         stay = input(f'Continue (remaining funds {player_funds})? [Y/N]').capitalize()
         if stay in YES_NO_RESPONSE:
@@ -240,3 +264,5 @@ while player_funds > 0 and keep_playing:
             print('unrecognized response. valid options are [Y/N]')
     
     keep_playing = (stay == 'Y') or (player_funds <= 0)
+
+    #some post game features to add here -->
