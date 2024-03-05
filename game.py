@@ -1,13 +1,14 @@
 import random
+from typing import Final
 
-suits = {
+SUITS:Final = {
     1:'2660',
     2:'2661',
     3:'2662',
     4:'2663'
 }
 
-card_face = {
+CARD_FACE:Final = {
     1:'A',
     2:'2',
     3:'3',
@@ -23,13 +24,18 @@ card_face = {
     13:'K'
 }
 
+VALID_MOVES:Final = ['S','H','F']
+
+MAX_HAND = 5
+AI_SAFETY = 17
+
 def get_suit(index):
-    unicode_str = suits.get(index)
+    unicode_str = SUITS.get(index)
     new_str = chr(int(unicode_str,16))
     return new_str
 
 def print_card(selected_card):
-    print(card_face.get(selected_card[0]),get_suit(selected_card[1]))
+    print(CARD_FACE.get(selected_card[0]),get_suit(selected_card[1]))
 
 def draw_card(player, current_deck, used_cards):
     dealt_card = current_deck.pop()
@@ -41,6 +47,59 @@ def print_hand(hand, player_name):
     for card_id in hand:
         current_card = base_deck.get(card_id)
         print_card(current_card)
+    
+def print_table(player,dealer,):
+    print_hand(dealer, 'dealer')
+    dealer_total = calculate_hand_values(dealer)
+    print(f'dealer total {dealer_total}')
+    print_hand(player, 'player')
+    player_total = calculate_hand_values(player)
+    print(f'player total {player_total}')
+
+def calculate_hand_values(hand):
+    total = 0
+    ace_count = 0
+    for card_id in hand:
+        current_card = base_deck.get(card_id)
+        if 1 < current_card[0] < 10:
+            total += current_card[0]
+        elif current_card[0] <= 13:
+            total += 10
+        else:
+            ace_count += 1
+    #Ace special rule
+    while ace_count > 0:
+        if (total + 11) > 21:
+            total += 1
+        else:
+            total += 11
+        ace_count -= 1
+    
+    if total > 21:
+        #bust 
+        total = 0
+    
+    return total
+
+def move_AI(hand,deck,used):
+    score = calculate_hand_values(hand)
+
+    if len(hand) < 5:
+        if score < 21:
+            if score < AI_SAFETY:
+                #dealer risks it
+                draw_card(hand, deck, used)
+            else:
+                #dealer stands
+                return True
+        elif score >= 21:
+            #dealer bust
+            return True
+        else:
+            return False
+    else:
+        return False
+
 
 base_deck = {}
 playing_deck = []
@@ -58,36 +117,61 @@ for card in range (52):
     if card_position == 14:
         card_position = 1
         suit += 1
-#print(f'base: {len(base_deck)}')
-
-#for card_id, card in base_deck.items():
-#    print_card(card)
 
 random.shuffle(playing_deck)
-
-#print(f'shuffled: {len(playing_deck)}')
-
-#for card_id in playing_deck:
-#    current_card = base_deck.get(card_id)
-#    print_card(current_card)
 
 game_is_on = True
 
 dealer_hand = []
 player_hand = []
 drawn = []
+move = ''
+available_ai_moves = MAX_HAND
 
 while game_is_on:
+
     #initial draw of 2 cards
     if len(player_hand) == 0:
         draw_card(player_hand, playing_deck, drawn)
         draw_card(player_hand, playing_deck, drawn)
         draw_card(dealer_hand, playing_deck, drawn)
         draw_card(dealer_hand, playing_deck, drawn)
+        #print(drawn)
+        print_table(player_hand, dealer_hand)
+        if calculate_hand_values(dealer_hand) == 21:
+            game_is_on = False
+            print('dealer black jack. you lose.')
+            break
+    else:
+        if move == 'H':
+            #hit - draw upto 5 cards and get closer to 21 pts without going over.
+            draw_card(player_hand, playing_deck,drawn)
+            print_table(player_hand, dealer_hand)
+            if calculate_hand_values(player_hand) == 0:
+                print('bust. you lose.')
+                game_is_on = False
+        elif move == 'S':
+            #stand - stop drawing and let AI move
+            if calculate_hand_values(player_hand) == 0:
+                print('bust. you lose.')
+                game_is_on = False
+            else:
+                print('dealer moves...')
+                #dealer AI here -->
+        elif move == 'F':
+            #forfeit - lose the match
+            print('forfeit. you lose.')
+            game_is_on = False
 
+    while True and game_is_on:
+        move = input('Your move? [S]tand, [H]it, [F]orfeit > ').capitalize()
+        if move in VALID_MOVES:
+            break
+        elif len(move) > 1:
+            print('input has exceeded length. please limit response to [S/H/F]')
+        elif not move.isalpha:
+            print('input is not a letter from the selection [S/H/F]')
+        else:
+            print('unrecognized response. valid options are [S/H/F]')
 
-    print_hand(dealer_hand, 'dealer')
-    print_hand(player_hand, 'player')
-    #print(drawn)
-
-    break
+    
