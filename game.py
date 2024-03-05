@@ -25,6 +25,7 @@ CARD_FACE:Final = {
 }
 
 VALID_MOVES:Final = ['S','H','F']
+YES_NO_RESPONSE = ['Y','N']
 
 MAX_HAND = 5
 AI_SAFETY = 17
@@ -108,6 +109,9 @@ def move_AI(hand,deck,used):
     else:
         return False
 
+def print_funds(wallet):
+    print(f'remaining funds [{wallet}]')
+
 
 base_deck = {}
 playing_deck = []
@@ -126,91 +130,113 @@ for card in range (52):
         card_position = 1
         suit += 1
 
-random.shuffle(playing_deck)
+player_funds = 100
+keep_playing = True
 
-game_is_on = True
+while player_funds > 0 and keep_playing:
+    print_funds(player_funds)
 
-dealer_hand = []
-player_hand = []
-drawn = []
-move = ''
-available_ai_moves = MAX_HAND
+    random.shuffle(playing_deck)
 
-while game_is_on:
+    game_is_on = True
 
-    #initial draw of 2 cards
-    if len(player_hand) == 0:
-        draw_card(player_hand, playing_deck, drawn)
-        draw_card(player_hand, playing_deck, drawn)
-        draw_card(dealer_hand, playing_deck, drawn)
-        draw_card(dealer_hand, playing_deck, drawn)
-        #print(drawn)
-        print_table(player_hand, dealer_hand)
-        if calculate_hand_values(dealer_hand) == 21:
-            game_is_on = False
-            print('dealer black jack. you lose.')
-            break
-    else:
-        if move == 'H':
-            #hit - draw upto 5 cards and get closer to 21 pts without going over.
-            draw_card(player_hand, playing_deck,drawn)
+    dealer_hand = []
+    player_hand = []
+    drawn = []
+    move = ''
+    available_ai_moves = MAX_HAND
+
+    while game_is_on:
+
+        #initial draw of 2 cards
+        if len(player_hand) == 0:
+            draw_card(player_hand, playing_deck, drawn)
+            draw_card(player_hand, playing_deck, drawn)
+            draw_card(dealer_hand, playing_deck, drawn)
+            draw_card(dealer_hand, playing_deck, drawn)
+            #print(drawn)
             print_table(player_hand, dealer_hand)
-            if calculate_hand_values(player_hand) == 0:
-                print('bust. you lose.')
+            if calculate_hand_values(dealer_hand) == 21:
                 game_is_on = False
-        elif move == 'S':
-            #stand - stop drawing and let AI move
-            if calculate_hand_values(player_hand) == 0:
-                print('bust. you lose.')
-            else:
-                #dealer AI here -->
-                dealer_needs_to_move = True
-                while dealer_needs_to_move:
-                    dealer_needs_to_move = move_AI(dealer_hand, playing_deck,drawn)
-                    print('dealer moves...')
-                    print_table(player_hand, dealer_hand)
-            #game ends either way
-            game_is_on = False
-                
-        elif move == 'F':
-            #forfeit - lose the match
-            print('forfeit. you lose.')
-            game_is_on = False
-
-    while True and game_is_on:
-        move = input('Your move? [S]tand, [H]it, [F]orfeit > ').capitalize()
-        if move in VALID_MOVES:
-            break
-        elif len(move) > 1:
-            print('input has exceeded length. please limit response to [S/H/F]')
-        elif not move.isalpha:
-            print('input is not a letter from the selection [S/H/F]')
+                print('dealer black jack. you lose.')
+                break
         else:
-            print('unrecognized response. valid options are [S/H/F]')
+            if move == 'H':
+                #hit - draw upto 5 cards and get closer to 21 pts without going over.
+                draw_card(player_hand, playing_deck,drawn)
+                print_table(player_hand, dealer_hand)
+                if calculate_hand_values(player_hand) == 0:
+                    print('bust. you lose.')
+                    game_is_on = False
+            elif move == 'S':
+                #stand - stop drawing and let AI move
+                if calculate_hand_values(player_hand) == 0:
+                    print('bust. you lose.')
+                else:
+                    #dealer AI here -->
+                    dealer_needs_to_move = True
+                    while dealer_needs_to_move:
+                        dealer_needs_to_move = move_AI(dealer_hand, playing_deck,drawn)
+                        print('dealer moves...')
+                        print_table(player_hand, dealer_hand)
+                #game ends either way
+                game_is_on = False
+                    
+            elif move == 'F':
+                #forfeit - lose the match
+                print('forfeit. you lose.')
+                game_is_on = False
 
-#game has ended compare scores
-            
-player_score = calculate_hand_values(player_hand)
-dealer_score = calculate_hand_values(dealer_hand)
+        while True and game_is_on:
+            move = input('Your move? [S]tand, [H]it, [F]orfeit > ').capitalize()
+            if move in VALID_MOVES:
+                break
+            elif len(move) > 1:
+                print('input has exceeded length. please limit response to [S/H/F]')
+            elif not move.isalpha:
+                print('input is not a letter from the selection [S/H/F]')
+            else:
+                print('unrecognized response. valid options are [S/H/F]')
+
+    #game has ended compare scores
+    player_score = calculate_hand_values(player_hand)
+    dealer_score = calculate_hand_values(dealer_hand)
 
 
-win = False
-if player_score > dealer_score:
-    win = True
-elif player_score == dealer_score:
-    #dealer black jack, auto lose
-    if check_for_acess(dealer_hand):
+    win = False
+    if move == 'F':
         win = False
-    #player black jack
-    elif check_for_acess(player_hand):
+    elif player_score > dealer_score:
         win = True
-    #house always wins a tie
+    elif player_score == dealer_score:
+        #dealer black jack, auto lose
+        if check_for_acess(dealer_hand):
+            win = False
+        #player black jack
+        elif check_for_acess(player_hand):
+            win = True
+        #house always wins a tie
+        else:
+            win = False
     else:
         win = False
-else:
-    win = False
 
-if win:
-    print('player wins.')
-else:
-    print('house wins.')
+    if win:
+        print('player wins.')
+        player_funds += 50
+    else:
+        print('house wins.')
+        player_funds -= 50
+
+    while True and player_funds > 0:
+        stay = input(f'Continue (remaining funds {player_funds})? [Y/N]').capitalize()
+        if stay in YES_NO_RESPONSE:
+            break
+        elif len(quit) > 1:
+            print('input has exceeded length. please limit response to [Y/N]')
+        elif not stay.isalpha:
+            print('input is not a letter from the selection [Y/N]')
+        else:
+            print('unrecognized response. valid options are [Y/N]')
+    
+    keep_playing = (stay == 'Y') or (player_funds <= 0)
