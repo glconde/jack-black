@@ -47,6 +47,14 @@ def print_hand(hand, player_name):
     for card_id in hand:
         current_card = base_deck.get(card_id)
         print_card(current_card)
+
+def check_for_acess(hand):
+    found = False
+    for card_id in hand: 
+        current_card = base_deck.get(card_id)
+        if CARD_FACE.get(current_card[0]) == 'A':
+            return found
+        
     
 def print_table(player,dealer,):
     print_hand(dealer, 'dealer')
@@ -55,6 +63,7 @@ def print_table(player,dealer,):
     print_hand(player, 'player')
     player_total = calculate_hand_values(player)
     print(f'player total {player_total}')
+    print('-'*20)
 
 def calculate_hand_values(hand):
     total = 0
@@ -91,12 +100,12 @@ def move_AI(hand,deck,used):
                 draw_card(hand, deck, used)
             else:
                 #dealer stands
-                return True
+                return False
         elif score >= 21:
-            #dealer bust
-            return True
-        else:
+            #dealer bust or 21, so dealer stands (stop drawing)
             return False
+        else:
+            return True
     else:
         return False
 
@@ -154,10 +163,16 @@ while game_is_on:
             #stand - stop drawing and let AI move
             if calculate_hand_values(player_hand) == 0:
                 print('bust. you lose.')
-                game_is_on = False
             else:
-                print('dealer moves...')
                 #dealer AI here -->
+                dealer_needs_to_move = True
+                while dealer_needs_to_move:
+                    dealer_needs_to_move = move_AI(dealer_hand, playing_deck,drawn)
+                    print('dealer moves...')
+                    print_table(player_hand, dealer_hand)
+            #game ends either way
+            game_is_on = False
+                
         elif move == 'F':
             #forfeit - lose the match
             print('forfeit. you lose.')
@@ -174,4 +189,29 @@ while game_is_on:
         else:
             print('unrecognized response. valid options are [S/H/F]')
 
-    
+#game has ended compare scores
+            
+player_score = calculate_hand_values(player_hand)
+dealer_score = calculate_hand_values(dealer_hand)
+
+
+win = False
+if player_score > dealer_score:
+    win = True
+elif player_score == dealer_score:
+    #dealer black jack, auto lose
+    if check_for_acess(dealer_hand):
+        win = False
+    #player black jack
+    elif check_for_acess(player_hand):
+        win = True
+    #house always wins a tie
+    else:
+        win = False
+else:
+    win = False
+
+if win:
+    print('player wins.')
+else:
+    print('house wins.')
