@@ -55,7 +55,6 @@ def check_for_acess(hand):
         if CARD_FACE.get(current_card[0]) == 'A':
             return found
         
-    
 def print_table(player,dealer,):
     print_hand(dealer, 'dealer')
     dealer_total = calculate_hand_values(dealer)
