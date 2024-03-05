@@ -132,23 +132,38 @@ def move_AI(hand,deck,used):
 def print_funds(wallet):
     print(f'remaining funds [{wallet}]')
 
+def initialize_base_deck(deck):
+    card_position = 1
+    suit = 1
+    for card_index in range (52):
+        new_id = card_index + 1
+        deck.update({new_id:[card_position, suit]})
+        card_position += 1
+        if card_position == 14:
+            card_position = 1
+            suit += 1
+
+def reset_deck(deck):
+    for card_index in range (52):
+        new_id = card_index + 1
+        deck.append(new_id)
 
 base_deck = {}
+initialize_base_deck(base_deck)
+
 playing_deck = []
 
-card_position = 1
-suit = 1
 drawn = False
 
 #initialize deck
-for card in range (52):
+"""for card in range (52):
     new_id = card + 1
     playing_deck.append(new_id)
     base_deck.update({new_id:[card_position, suit]})
     card_position += 1
     if card_position == 14:
         card_position = 1
-        suit += 1
+        suit += 1"""
 
 #default funds. change this to a multiple of 50.
 player_funds = 100
@@ -158,6 +173,7 @@ keep_playing = True
 while player_funds > 0 and keep_playing:
     print_funds(player_funds)
 
+    reset_deck(playing_deck)
     random.shuffle(playing_deck)
 
     game_is_on = True
