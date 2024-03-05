@@ -1,7 +1,7 @@
 """
 This is a simple game of Black Jack.
 The objective is to draw upto five(5) cards and get to or closer to 21 without getting over.
-The player is give 100 funds to play and a single match will cost 50. Which means you get +50 to your funds if you win, -50 if you lose.
+The player is given 100 funds (default setting) to play and each match will cost 50. Which means you get +50 to your funds if you win, -50 if you lose.
 The game ends if you have zero(0) funds or you chose to quit.
 
 Please view README file for more details on rules and default settings.
