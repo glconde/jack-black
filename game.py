@@ -36,7 +36,7 @@ CARD_FACE:Final = {
 }
 
 VALID_MOVES:Final = ['S','H','F']
-YES_NO_RESPONSE = ['Y','N']
+YES_NO_RESPONSE:Final = ['Y','N']
 
 MAX_HAND = 5
 AI_SAFETY = 17
