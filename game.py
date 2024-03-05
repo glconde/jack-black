@@ -155,16 +155,6 @@ playing_deck = []
 
 drawn = False
 
-#initialize deck
-"""for card in range (52):
-    new_id = card + 1
-    playing_deck.append(new_id)
-    base_deck.update({new_id:[card_position, suit]})
-    card_position += 1
-    if card_position == 14:
-        card_position = 1
-        suit += 1"""
-
 #default funds. change this to a multiple of 50.
 player_funds = 100
 keep_playing = True
