@@ -1,3 +1,5 @@
+<b>A Simple Black Jack Game</b>
+
 This is a simple game of Black Jack[1] so no splitting or side bets.
 
 The objective is to draw upto five(5) cards and get to or closer to 21 without getting over.
