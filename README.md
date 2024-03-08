@@ -1,4 +1,4 @@
-<b>A Simple Black Jack Game</b>
+<b>A Black Jack Game</b>
 
 This is a simple game of Black Jack[1] so no splitting or side bets.
 
