@@ -6,7 +6,7 @@ The game ends if you have zero(0) funds or you chose to quit.
 
 Please view README file for more details on rules and default settings.
 
-George Conde 2024  
+G. Conde 2024  
 """
 
 import random
