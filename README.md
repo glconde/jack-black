@@ -8,7 +8,7 @@ Getting over 21 is called bust and the player loses.
 
 The following is the point system for cards:
 <ul>
-    <li> 2-9 > has the equivalent point based on it's card face. e.g. 3 = 3 pts </li>
+    <li> 2-9 > has the equivalent point based on its card face. e.g. 3 = 3 pts </li>
     <li> 10, J, Q, K are 10 points each. </li>
     <li> Aces can be 1 or 11, depending on the current total points. 1 is used if drawn and the total points gets the score over 21. e.g. when current hand is 10, J, drawing an ace will use 1 instead of 11. </li>
 </ul>
